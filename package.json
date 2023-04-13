@@ -38,7 +38,8 @@
     "test:app-agent": "RUST_LOG=error RUST_BACKTRACE=1 node --loader ts-node/esm test/e2e/app-agent-websocket.ts",
     "test": "RUST_LOG=error RUST_BACKTRACE=1 node --loader ts-node/esm test/index.ts",
     "build:docs": "api-extractor run --local && api-documenter markdown -i docs/temp -o docs",
-    "build": "rimraf ./lib && tsc -p tsconfig.build.json && npm run build:docs"
+    "build": "rimraf ./lib && tsc -p tsconfig.build.json && npm run build:docs",
+    "postinstall": "yarn build"
   },
   "dependencies": {
     "@holochain/serialization": "^0.1.0-beta-rc.3",
