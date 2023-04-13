@@ -1,6 +1,7 @@
 import { decode, encode } from "@msgpack/msgpack";
 import Emittery from "emittery";
-import Websocket from "isomorphic-ws";
+//@ts-ignore
+import { Websocket } from "isomorphic-ws";
 import { AppSignal, Signal, SignalType } from "./app/types.js";
 
 interface HolochainMessage {
@@ -34,7 +35,8 @@ export class WsClient extends Emittery {
     this.pendingRequests = {};
     this.index = 0;
 
-    socket.onmessage = async (serializedMessage) => {
+    //@ts-ignore
+    socket.on("message", async (serializedMessage) => {
       // If data is not a buffer (nodejs), it will be a blob (browser)
       let deserializedData;
       if (
@@ -85,9 +87,10 @@ export class WsClient extends Emittery {
           `Got unrecognized Websocket message type: ${message.type}`
         );
       }
-    };
+    });
 
-    socket.onclose = (event) => {
+    //@ts-ignore
+    socket.on("close", (event) => {
       const pendingRequestIds = Object.keys(this.pendingRequests).map((id) =>
         parseInt(id)
       );
@@ -100,7 +103,7 @@ export class WsClient extends Emittery {
           delete this.pendingRequests[id];
         });
       }
-    };
+    });
   }
 
   /**
@@ -115,17 +118,17 @@ export class WsClient extends Emittery {
       // make sure that there are no uncaught connection
       // errors because that causes nodejs thread to crash
       // with uncaught exception
-      socket.onerror = () => {
+      socket.on("error", () => {
         reject(
           new Error(
             `could not connect to holochain conductor, please check that a conductor service is running and available at ${url}`
           )
         );
-      };
-      socket.onopen = () => {
+      });
+      socket.on("open", () => {
         const client = new WsClient(socket);
         resolve(client);
-      };
+      });
     });
   }
 
