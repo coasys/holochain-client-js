@@ -29,8 +29,7 @@ export class WsClient extends Emittery {
   >;
   index: number;
 
-  //@ts-ignore
-  constructor(socket: Websocket) {
+  constructor(socket: StandardWebSocketClient) {
     super();
     this.socket = socket;
     this.pendingRequests = {};
@@ -115,7 +114,7 @@ export class WsClient extends Emittery {
    */
   static connect(url: string) {
     return new Promise<WsClient>((resolve, reject) => {
-      const socket = new Websocket(url);
+      const socket = new StandardWebSocketClient(url);
       // make sure that there are no uncaught connection
       // errors because that causes nodejs thread to crash
       // with uncaught exception
