@@ -1,7 +1,7 @@
 import { decode, encode } from "@msgpack/msgpack";
 import Emittery from "emittery";
 //@ts-ignore
-import { Websocket } from "isomorphic-ws";
+import { StandardWebSocketClient } from "isomorphic-ws";
 import { AppSignal, Signal, SignalType } from "./app/types.js";
 
 interface HolochainMessage {
@@ -19,7 +19,7 @@ interface HolochainMessage {
  * @public
  */
 export class WsClient extends Emittery {
-  socket: Websocket;
+  socket: StandardWebSocketClient;
   pendingRequests: Record<
     number,
     {
@@ -29,6 +29,7 @@ export class WsClient extends Emittery {
   >;
   index: number;
 
+  //@ts-ignore
   constructor(socket: Websocket) {
     super();
     this.socket = socket;
