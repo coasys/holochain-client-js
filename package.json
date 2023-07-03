@@ -38,7 +38,8 @@
     "test:app-agent": "RUST_LOG=error RUST_BACKTRACE=1 node --loader ts-node/esm test/e2e/app-agent-websocket.ts",
     "test": "RUST_LOG=error RUST_BACKTRACE=1 node --loader ts-node/esm test/index.ts",
     "build:docs": "api-extractor run --local && api-documenter markdown -i docs/temp -o docs",
-    "build": "rimraf ./lib && tsc -p tsconfig.build.json && npm run build:docs"
+    "build": "rimraf ./lib && tsc -p tsconfig.build.json && npm run build:docs",
+    "bundle": "rollup -c rollup.config.cjs"
   },
   "dependencies": {
     "@holochain/serialization": "^0.1.0-beta-rc.3",
@@ -53,6 +54,9 @@
   "devDependencies": {
     "@microsoft/api-documenter": "^7.19.27",
     "@microsoft/api-extractor": "^7.33.7",
+    "@rollup/plugin-alias": "^5.0.0",
+    "@rollup/plugin-commonjs": "^25.0.2",
+    "@rollup/plugin-node-resolve": "^15.1.0",
     "@types/js-yaml": "^3.12.7",
     "@types/lodash-es": "^4.17.6",
     "@types/tape": "^4.13.2",
@@ -66,6 +70,7 @@
     "js-yaml": "^3.14.1",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
+    "rollup": "^3.26.0",
     "tape": "^5.5.3",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.2"
