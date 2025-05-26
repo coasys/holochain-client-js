@@ -1,4 +1,4 @@
-import { FunctionName, ZomeName } from "../api/index.js";
+import { FunctionName, ZomeName } from "../api/admin/index.js";
 import { AgentPubKey } from "../types.js";
 /**
  * @public
@@ -23,9 +23,10 @@ export declare enum GrantedFunctionsType {
  * @public
  */
 export type GrantedFunctions = {
-    [GrantedFunctionsType.All]: null;
+    type: "all";
 } | {
-    [GrantedFunctionsType.Listed]: [ZomeName, FunctionName][];
+    type: "listed";
+    value: [ZomeName, FunctionName][];
 };
 /**
  * @public
@@ -38,12 +39,16 @@ export interface ZomeCallCapGrant {
 /**
  * @public
  */
-export type CapAccess = "Unrestricted" | {
-    Transferable: {
+export type CapAccess = {
+    type: "unrestricted";
+} | {
+    type: "transferable";
+    value: {
         secret: CapSecret;
     };
 } | {
-    Assigned: {
+    type: "assigned";
+    value: {
         secret: CapSecret;
         assignees: AgentPubKey[];
     };

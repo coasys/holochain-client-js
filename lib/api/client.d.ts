@@ -1,29 +1,38 @@
-import { decode } from "@msgpack/msgpack";
+/// <reference types="ws" />
 import Emittery from "emittery";
-import { StandardWebSocketClient } from "isomorphic-ws";
+import IsoWebSocket from "isomorphic-ws";
+import { WsClientOptions } from "./common.js";
+import { AppAuthenticationToken } from "./admin/index.js";
 /**
- * A Websocket client which can make requests and receive responses,
+ * @public
+ */
+export interface AppAuthenticationRequest {
+    token: AppAuthenticationToken;
+}
+/**
+ * A WebSocket client which can make requests and receive responses,
  * as well as send and receive signals.
  *
- * Uses Holochain's websocket WireMessage for communication.
+ * Uses Holochain's WireMessage for communication.
  *
  * @public
  */
 export declare class WsClient extends Emittery {
-    socket: StandardWebSocketClient;
-    pendingRequests: Record<number, {
-        resolve: (msg: unknown) => ReturnType<typeof decode>;
-        reject: (error: Error) => void;
-    }>;
-    index: number;
-    constructor(socket: StandardWebSocketClient);
+    socket: IsoWebSocket;
+    url: URL | undefined;
+    options: WsClientOptions;
+    private pendingRequests;
+    private index;
+    private authenticationToken;
+    constructor(socket: IsoWebSocket, url?: URL, options?: WsClientOptions);
     /**
      * Instance factory for creating WsClients.
      *
-     * @param url - The `ws://` URL to connect to.
+     * @param url - The WebSocket URL to connect to.
+     * @param options - Options for the WsClient.
      * @returns An new instance of the WsClient.
      */
-    static connect(url: string): Promise<WsClient>;
+    static connect(url: URL, options?: WsClientOptions): Promise<WsClient>;
     /**
      * Sends data as a signal.
      *
@@ -31,15 +40,29 @@ export declare class WsClient extends Emittery {
      */
     emitSignal(data: unknown): void;
     /**
+     * Authenticate the client with the conductor.
+     *
+     * This is only relevant for app websockets.
+     *
+     * @param request - The authentication request, containing an app authentication token.
+     */
+    authenticate(request: AppAuthenticationRequest): Promise<void>;
+    /**
+     * Close the websocket connection.
+     */
+    close(code?: number): Promise<IsoWebSocket.CloseEvent>;
+    /**
      * Send requests to the connected websocket.
      *
      * @param request - The request to send over the websocket.
      * @returns
      */
-    request<Req, Res>(request: Req): Promise<Res>;
+    request<Response>(request: unknown): Promise<Response>;
+    private exchange;
+    private sendMessage;
+    private registerMessageListener;
+    private registerCloseListener;
+    private reconnectWebsocket;
     private handleResponse;
-    /**
-     * Close the websocket connection.
-     */
-    close(code?: number): Promise<void>;
 }
+export { IsoWebSocket };

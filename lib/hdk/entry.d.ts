@@ -4,11 +4,7 @@ import { CounterSigningSessionData } from "./countersigning.js";
 /**
  * @public
  */
-export type EntryVisibility = {
-    Public: null;
-} | {
-    Private: null;
-};
+export type EntryVisibility = "Public" | "Private";
 /**
  * @public
  */

@@ -1,6 +1,6 @@
-import nacl from "tweetnacl";
-import { CapSecret } from "../hdk/capabilities.js";
-import { AgentPubKey, CellId } from "../types.js";
+import { type KeyPair } from "libsodium-wrappers";
+import type { CapSecret } from "../hdk/capabilities.js";
+import type { AgentPubKey, CellId } from "../types.js";
 /**
  * @public
  */
@@ -10,7 +10,7 @@ export type Nonce256Bit = Uint8Array;
  */
 export interface SigningCredentials {
     capSecret: CapSecret;
-    keyPair: nacl.SignKeyPair;
+    keyPair: KeyPair;
     signingKey: AgentPubKey;
 }
 /**
@@ -33,14 +33,13 @@ export declare const setSigningCredentials: (cellId: CellId, credentials: Signin
 /**
  * Generates a key pair for signing zome calls.
  *
+ * @param agentPubKey - The agent pub key to take 4 last bytes (= DHT location)
+ * from (optional).
  * @returns The signing key pair and an agent pub key based on the public key.
  *
  * @public
  */
-export declare const generateSigningKeyPair: () => [
-    nacl.SignKeyPair,
-    AgentPubKey
-];
+export declare const generateSigningKeyPair: (agentPubKey?: AgentPubKey) => Promise<[KeyPair, AgentPubKey]>;
 /**
  * @public
  */

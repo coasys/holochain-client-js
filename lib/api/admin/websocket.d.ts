@@ -1,8 +1,8 @@
-import { CapSecret, GrantedFunctions } from "../../hdk/capabilities.js";
+import { CapSecret, GrantedFunctions } from "../../hdk/index.js";
 import type { AgentPubKey, CellId } from "../../types.js";
 import { WsClient } from "../client.js";
-import { Requester, Transformer } from "../common.js";
-import { AddAgentInfoRequest, AddAgentInfoResponse, AdminApi, AgentInfoRequest, AgentInfoResponse, AttachAppInterfaceRequest, AttachAppInterfaceResponse, DeleteCloneCellRequest, DeleteCloneCellResponse, DisableAppRequest, DisableAppResponse, DumpFullStateRequest, DumpFullStateResponse, DumpStateRequest, DumpStateResponse, EnableAppRequest, EnableAppResponse, GenerateAgentPubKeyRequest, GenerateAgentPubKeyResponse, GetDnaDefinitionRequest, GetDnaDefinitionResponse, GrantZomeCallCapabilityRequest, GrantZomeCallCapabilityResponse, InstallAppRequest, InstallAppResponse, ListAppInterfacesRequest, ListAppInterfacesResponse, ListAppsRequest, ListAppsResponse, ListCellIdsRequest, ListCellIdsResponse, ListDnasRequest, ListDnasResponse, RegisterDnaRequest, RegisterDnaResponse, UninstallAppRequest, UninstallAppResponse } from "./types.js";
+import { Requester, Transformer, WebsocketConnectionOptions } from "../common.js";
+import { AddAgentInfoRequest, AddAgentInfoResponse, AdminApi, AgentInfoRequest, AgentInfoResponse, AttachAppInterfaceRequest, AttachAppInterfaceResponse, DeleteCloneCellRequest, DeleteCloneCellResponse, DisableAppRequest, DisableAppResponse, DumpFullStateRequest, DumpFullStateResponse, DumpNetworkMetricsRequest, DumpNetworkMetricsResponse, DumpNetworkStatsRequest, DumpNetworkStatsResponse, DumpStateRequest, DumpStateResponse, EnableAppRequest, EnableAppResponse, GenerateAgentPubKeyRequest, GenerateAgentPubKeyResponse, GetDnaDefinitionRequest, GetDnaDefinitionResponse, GrantZomeCallCapabilityRequest, GrantZomeCallCapabilityResponse, InstallAppRequest, InstallAppResponse, IssueAppAuthenticationTokenRequest, IssueAppAuthenticationTokenResponse, ListAppInterfacesRequest, ListAppInterfacesResponse, ListAppsRequest, ListAppsResponse, ListCellIdsRequest, ListCellIdsResponse, ListDnasRequest, ListDnasResponse, RegisterDnaRequest, RegisterDnaResponse, RevokeAgentKeyRequest, RevokeAgentKeyResponse, StorageInfoRequest, StorageInfoResponse, UninstallAppRequest, UninstallAppResponse, UpdateCoordinatorsRequest, UpdateCoordinatorsResponse } from "./types.js";
 /**
  * A class for interacting with a conductor's Admin API.
  *
@@ -21,11 +21,10 @@ export declare class AdminWebsocket implements AdminApi {
     /**
      * Factory mehtod to create a new instance connected to the given URL.
      *
-     * @param url - A `ws://` URL used as the connection address.
-     * @param defaultTimeout - The default timeout for any request.
+     * @param options - {@link (WebsocketConnectionOptions:interface)}
      * @returns A promise for a new connected instance.
      */
-    static connect(url: string, defaultTimeout?: number): Promise<AdminWebsocket>;
+    static connect(options?: WebsocketConnectionOptions): Promise<AdminWebsocket>;
     _requester<ReqI, ReqO, ResI, ResO>(tag: string, transformer?: Transformer<ReqI, ReqO, ResI, ResO>): (req: ReqI, timeout?: number | undefined) => Promise<ResO>;
     /**
      * Send a request to open the given port for {@link AppWebsocket} connections.
@@ -53,6 +52,10 @@ export declare class AdminWebsocket implements AdminApi {
      */
     generateAgentPubKey: Requester<GenerateAgentPubKeyRequest, GenerateAgentPubKeyResponse>;
     /**
+     * Generate a new agent pub key.
+     */
+    revokeAgentKey: Requester<RevokeAgentKeyRequest, RevokeAgentKeyResponse>;
+    /**
      * Register a DNA for later app installation.
      *
      * Stores the given DNA into the Holochain DNA database and returns the hash of it.
@@ -70,6 +73,10 @@ export declare class AdminWebsocket implements AdminApi {
      * Install the specified app into Holochain.
      */
     installApp: Requester<InstallAppRequest, InstallAppResponse>;
+    /**
+     * Update coordinators for an installed app.
+     */
+    updateCoordinators: Requester<UpdateCoordinatorsRequest, UpdateCoordinatorsResponse>;
     /**
      * List all registered DNAs.
      */
@@ -103,6 +110,10 @@ export declare class AdminWebsocket implements AdminApi {
      * calls.
      */
     grantZomeCallCapability: Requester<GrantZomeCallCapabilityRequest, GrantZomeCallCapabilityResponse>;
+    storageInfo: Requester<StorageInfoRequest, StorageInfoResponse>;
+    issueAppAuthenticationToken: Requester<IssueAppAuthenticationTokenRequest, IssueAppAuthenticationTokenResponse>;
+    dumpNetworkStats: Requester<DumpNetworkStatsRequest, DumpNetworkStatsResponse>;
+    dumpNetworkMetrics: Requester<DumpNetworkMetricsRequest, DumpNetworkMetricsResponse>;
     /**
      * Grant a capability for signing zome calls.
      *

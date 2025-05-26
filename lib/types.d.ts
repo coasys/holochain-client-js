@@ -29,6 +29,10 @@ export type AnyDhtHash = HoloHash;
 /**
  * @public
  */
+export type ExternalHash = HoloHash;
+/**
+ * @public
+ */
 export type KitsuneAgent = Uint8Array;
 /**
  * @public
@@ -78,7 +82,7 @@ export type CellId = [DnaHash, AgentPubKey];
 /**
  * @public
  */
-export type DnaProperties = any;
+export type DnaProperties = unknown;
 /**
  * @public
  */
@@ -107,12 +111,6 @@ export interface Duration {
 export interface HoloHashed<T> {
     hash: HoloHash;
     content: T;
-}
-/**
- * @public
- */
-export interface NetworkInfo {
-    fetch_pool_info: FetchPoolInfo;
 }
 /**
  * @public
