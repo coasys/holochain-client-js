@@ -1,6 +1,6 @@
-import nacl from "tweetnacl";
-import { CapSecret } from "../hdk/capabilities.js";
-import { AgentPubKey, CellId } from "../types.js";
+import _sodium, { type KeyPair } from "libsodium-wrappers";
+import type { CapSecret } from "../hdk/capabilities.js";
+import type { AgentPubKey, CellId } from "../types.js";
 import { encodeHashToBase64 } from "../utils/base64.js";
 
 /**
@@ -13,7 +13,7 @@ export type Nonce256Bit = Uint8Array;
  */
 export interface SigningCredentials {
   capSecret: CapSecret;
-  keyPair: nacl.SignKeyPair;
+  keyPair: KeyPair;
   signingKey: AgentPubKey;
 }
 
@@ -54,17 +54,21 @@ export const setSigningCredentials = (
 /**
  * Generates a key pair for signing zome calls.
  *
+ * @param agentPubKey - The agent pub key to take 4 last bytes (= DHT location)
+ * from (optional).
  * @returns The signing key pair and an agent pub key based on the public key.
  *
  * @public
  */
-export const generateSigningKeyPair: () => [
-  nacl.SignKeyPair,
-  AgentPubKey
-] = () => {
-  const keyPair = nacl.sign.keyPair();
+export const generateSigningKeyPair: (
+  agentPubKey?: AgentPubKey
+) => Promise<[KeyPair, AgentPubKey]> = async (agentPubKey?: AgentPubKey) => {
+  await _sodium.ready;
+  const sodium = _sodium;
+  const keyPair = sodium.crypto_sign_keypair();
+  const locationBytes = agentPubKey ? agentPubKey.subarray(35) : [0, 0, 0, 0];
   const signingKey = new Uint8Array(
-    [132, 32, 36].concat(...keyPair.publicKey).concat(...[0, 0, 0, 0])
+    [132, 32, 36].concat(...keyPair.publicKey).concat(...locationBytes)
   );
   return [keyPair, signingKey];
 };
@@ -72,7 +76,7 @@ export const generateSigningKeyPair: () => [
 /**
  * @public
  */
-export const randomCapSecret: () => Promise<CapSecret> = () =>
+export const randomCapSecret: () => Promise<CapSecret> = async () =>
   randomByteArray(64);
 
 /**
@@ -85,16 +89,12 @@ export const randomNonce: () => Promise<Nonce256Bit> = async () =>
  * @public
  */
 export const randomByteArray = async (length: number) => {
-  if (
-    typeof window !== "undefined" &&
-    "crypto" in window &&
-    "getRandomValues" in window.crypto
-  ) {
-    return window.crypto.getRandomValues(new Uint8Array(length));
-  } else {
-    const crypto = await import("crypto");
-    return new Uint8Array(crypto.randomBytes(length));
+  if (globalThis.crypto && "getRandomValues" in globalThis.crypto) {
+    return globalThis.crypto.getRandomValues(new Uint8Array(length));
   }
+  await _sodium.ready;
+  const sodium = _sodium;
+  return sodium.randombytes_buf(length);
 };
 
 /**

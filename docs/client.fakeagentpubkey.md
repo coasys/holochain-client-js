@@ -6,12 +6,48 @@
 
 Generate a valid agent key of a non-existing agent.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare function fakeAgentPubKey(): Promise<AgentPubKey>;
+export declare function fakeAgentPubKey(coreByte?: number | undefined): Promise<AgentPubKey>;
 ```
-<b>Returns:</b>
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+coreByte
+
+
+</td><td>
+
+number \| undefined
+
+
+</td><td>
+
+_(Optional)_ Optionally specify a byte to repeat for all core 32 bytes. If undefined will generate random core 32 bytes.
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
 
 Promise&lt;[AgentPubKey](./client.agentpubkey.md)<!-- -->&gt;
 

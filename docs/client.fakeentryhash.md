@@ -8,12 +8,48 @@ Generate a valid hash of a non-existing entry.
 
 From https://github.com/holochain/holochain/blob/develop/crates/holo\_hash/src/hash\_type/primitive.rs
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare function fakeEntryHash(): Promise<EntryHash>;
+export declare function fakeEntryHash(coreByte?: number | undefined): Promise<EntryHash>;
 ```
-<b>Returns:</b>
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+coreByte
+
+
+</td><td>
+
+number \| undefined
+
+
+</td><td>
+
+_(Optional)_ Optionally specify a byte to repeat for all core 32 bytes. If undefined will generate random core 32 bytes.
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
 
 Promise&lt;[EntryHash](./client.entryhash.md)<!-- -->&gt;
 

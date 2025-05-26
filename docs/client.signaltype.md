@@ -2,14 +2,58 @@
 
 [Home](./index.md) &gt; [@holochain/client](./client.md) &gt; [SignalType](./client.signaltype.md)
 
-## SignalType variable
+## SignalType enum
 
-
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-SignalType: {
-    readonly App: "App";
-    readonly System: "System";
-}
+export declare enum SignalType 
 ```
+
+## Enumeration Members
+
+<table><thead><tr><th>
+
+Member
+
+
+</th><th>
+
+Value
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+App
+
+
+</td><td>
+
+`"app"`
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+System
+
+
+</td><td>
+
+`"system"`
+
+
+</td><td>
+
+
+</td></tr>
+</tbody></table>

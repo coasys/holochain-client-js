@@ -5,15 +5,16 @@
 ## AppInfo type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type AppInfo = {
+export type AppInfo = {
     agent_pub_key: AgentPubKey;
     installed_app_id: InstalledAppId;
     cell_info: Record<RoleName, Array<CellInfo>>;
-    status: InstalledAppInfoStatus;
+    status: AppInfoStatus;
+    installed_at: Timestamp;
 };
 ```
-<b>References:</b> [AgentPubKey](./client.agentpubkey.md)<!-- -->, [InstalledAppId](./client.installedappid.md)<!-- -->, [RoleName](./client.rolename.md)<!-- -->, [CellInfo](./client.cellinfo.md)<!-- -->, [InstalledAppInfoStatus](./client.installedappinfostatus.md)
+**References:** [AgentPubKey](./client.agentpubkey.md)<!-- -->, [InstalledAppId](./client.installedappid.md)<!-- -->, [RoleName](./client.rolename.md)<!-- -->, [CellInfo](./client.cellinfo.md)<!-- -->, [AppInfoStatus](./client.appinfostatus.md)<!-- -->, [Timestamp](./client.timestamp.md)
 

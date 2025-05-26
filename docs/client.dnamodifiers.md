@@ -5,15 +5,13 @@
 ## DnaModifiers type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type DnaModifiers = {
+export type DnaModifiers = {
     network_seed: NetworkSeed;
-    properties: DnaProperties;
-    origin_time: Timestamp;
-    quantum_time: Duration;
+    properties: Uint8Array;
 };
 ```
-<b>References:</b> [NetworkSeed](./client.networkseed.md)<!-- -->, [DnaProperties](./client.dnaproperties.md)<!-- -->, [Timestamp](./client.timestamp.md)<!-- -->, [Duration](./client.duration.md)
+**References:** [NetworkSeed](./client.networkseed.md)
 

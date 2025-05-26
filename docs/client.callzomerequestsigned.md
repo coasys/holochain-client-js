@@ -5,16 +5,67 @@
 ## CallZomeRequestSigned interface
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export interface CallZomeRequestSigned extends CallZomeRequestUnsigned 
+export interface CallZomeRequestSigned 
 ```
-<b>Extends:</b> [CallZomeRequestUnsigned](./client.callzomerequestunsigned.md)
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [signature](./client.callzomerequestsigned.signature.md) |  | Uint8Array |  |
+<table><thead><tr><th>
 
+Property
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[bytes](./client.callzomerequestsigned.bytes.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Uint8Array
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+[signature](./client.callzomerequestsigned.signature.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Uint8Array
+
+
+</td><td>
+
+
+</td></tr>
+</tbody></table>

@@ -5,10 +5,8 @@
 ## AgentInfoResponse type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type AgentInfoResponse = Array<AgentInfoSigned>;
+export type AgentInfoResponse = Array<string>;
 ```
-<b>References:</b> [AgentInfoSigned](./client.agentinfosigned.md)
-

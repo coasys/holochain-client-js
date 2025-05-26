@@ -6,20 +6,48 @@
 
 Factory mehtod to create a new instance connected to the given URL.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-static connect(url: string, defaultTimeout?: number): Promise<AdminWebsocket>;
+static connect(options?: WebsocketConnectionOptions): Promise<AdminWebsocket>;
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  url | string | A <code>ws://</code> URL used as the connection address. |
-|  defaultTimeout | number | <i>(Optional)</i> The default timeout for any request. |
+<table><thead><tr><th>
 
-<b>Returns:</b>
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+
+</td><td>
+
+[WebsocketConnectionOptions](./client.websocketconnectionoptions.md)
+
+
+</td><td>
+
+_(Optional)_ [WebsocketConnectionOptions](./client.websocketconnectionoptions.md)
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
 
 Promise&lt;[AdminWebsocket](./client.adminwebsocket.md)<!-- -->&gt;
 

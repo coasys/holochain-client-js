@@ -5,17 +5,17 @@
 ## InstallAppRequest type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type InstallAppRequest = {
-    agent_key: AgentPubKey;
+export type InstallAppRequest = {
+    source: AppBundleSource;
+    agent_key?: AgentPubKey;
     installed_app_id?: InstalledAppId;
-    membrane_proofs: {
-        [key: string]: MembraneProof;
-    };
     network_seed?: NetworkSeed;
-} & AppBundleSource;
+    roles_settings?: RoleSettingsMap;
+    ignore_genesis_failure?: boolean;
+};
 ```
-<b>References:</b> [AgentPubKey](./client.agentpubkey.md)<!-- -->, [InstalledAppId](./client.installedappid.md)<!-- -->, [MembraneProof](./client.membraneproof.md)<!-- -->, [NetworkSeed](./client.networkseed.md)<!-- -->, [AppBundleSource](./client.appbundlesource.md)
+**References:** [AppBundleSource](./client.appbundlesource.md)<!-- -->, [AgentPubKey](./client.agentpubkey.md)<!-- -->, [InstalledAppId](./client.installedappid.md)<!-- -->, [NetworkSeed](./client.networkseed.md)<!-- -->, [RoleSettingsMap](./client.rolesettingsmap.md)
 

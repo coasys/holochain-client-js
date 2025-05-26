@@ -5,15 +5,16 @@
 ## DnaDefinition type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type DnaDefinition = {
+export type DnaDefinition = {
     name: string;
     modifiers: DnaModifiers;
+    lineage: DnaHashB64[];
     integrity_zomes: IntegrityZome[];
     coordinator_zomes: CoordinatorZome[];
 };
 ```
-<b>References:</b> [DnaModifiers](./client.dnamodifiers.md)<!-- -->, [IntegrityZome](./client.integrityzome.md)<!-- -->, [CoordinatorZome](./client.coordinatorzome.md)
+**References:** [DnaModifiers](./client.dnamodifiers.md)<!-- -->, [DnaHashB64](./client.dnahashb64.md)<!-- -->, [IntegrityZome](./client.integrityzome.md)<!-- -->, [CoordinatorZome](./client.coordinatorzome.md)
 

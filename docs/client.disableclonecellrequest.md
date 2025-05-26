@@ -5,7 +5,7 @@
 ## DisableCloneCellRequest interface
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface DisableCloneCellRequest 
@@ -13,8 +13,44 @@ export interface DisableCloneCellRequest
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [app\_id](./client.disableclonecellrequest.app_id.md) |  | [InstalledAppId](./client.installedappid.md) | The app id that the clone cell belongs to |
-|  [clone\_cell\_id](./client.disableclonecellrequest.clone_cell_id.md) |  | [RoleName](./client.rolename.md) \| [CellId](./client.cellid.md) | The clone id or cell id of the clone cell |
+<table><thead><tr><th>
 
+Property
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[clone\_cell\_id](./client.disableclonecellrequest.clone_cell_id.md)
+
+
+</td><td>
+
+
+</td><td>
+
+[CloneCellId](./client.clonecellid.md)
+
+
+</td><td>
+
+The clone id or cell id of the clone cell
+
+
+</td></tr>
+</tbody></table>

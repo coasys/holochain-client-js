@@ -5,15 +5,16 @@
 ## RegisterDnaRequest type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type RegisterDnaRequest = {
+export type RegisterDnaRequest = {
+    source: DnaSource;
     modifiers?: {
         network_seed?: string;
         properties?: DnaProperties;
     };
-} & DnaSource;
+};
 ```
-<b>References:</b> [DnaProperties](./client.dnaproperties.md)<!-- -->, [DnaSource](./client.dnasource.md)
+**References:** [DnaSource](./client.dnasource.md)<!-- -->, [DnaProperties](./client.dnaproperties.md)
 

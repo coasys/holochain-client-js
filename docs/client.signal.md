@@ -5,14 +5,16 @@
 ## Signal type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type Signal = {
-    [SignalType.App]: EncodedAppSignal;
+export type Signal = {
+    type: SignalType.App;
+    value: AppSignal;
 } | {
-    [SignalType.System]: unknown;
+    type: SignalType.System;
+    value: SystemSignal;
 };
 ```
-<b>References:</b> [EncodedAppSignal](./client.encodedappsignal.md)
+**References:** [SignalType.App](./client.signaltype.md)<!-- -->, [AppSignal](./client.appsignal.md)<!-- -->, [SignalType.System](./client.signaltype.md)<!-- -->, [SystemSignal](./client.systemsignal.md)
 

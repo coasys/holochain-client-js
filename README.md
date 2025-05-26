@@ -1,7 +1,8 @@
 [![Project](https://img.shields.io/badge/Project-Holochain-blue.svg?style=flat-square)](http://holochain.org/)
 [![Discord](https://img.shields.io/badge/Discord-DEV.HC-blue.svg?style=flat-square)](https://discord.gg/k55DS5dmPH)
 [![License: CAL 1.0](https://img.shields.io/badge/License-CAL%201.0-blue.svg)](https://github.com/holochain/cryptographic-autonomy-license)
-![Test](https://github.com/holochain/holochain-client-js/actions/workflows/test.yml/badge.svg?branch=main)
+![Integration Tests](https://github.com/holochain/holochain-client-js/actions/workflows/integration-test.yml/badge.svg?branch=main)
+![Bundling Tests](https://github.com/holochain/holochain-client-js/actions/workflows/bundling-test.yml/badge.svg?branch=main)
 [![Twitter Follow](https://img.shields.io/twitter/follow/holochain.svg?style=social&label=Follow)](https://twitter.com/holochain)
 
 # Holochain Client - JavaScript
@@ -14,6 +15,12 @@ A JavaScript client for the Holochain Conductor API (works with browsers as well
 
 ## Installation
 
+**JS client v0.19.x** is compatible with **Holochain v0.5.x**.
+
+**JS client v0.18.x** is compatible with **Holochain v0.4.x**.
+
+**JS client v0.17.x** is compatible with **Holochain v0.3.x**.
+
 To install from NPM, run
 ```bash
 npm install --save-exact @holochain/client
@@ -23,77 +30,92 @@ npm install --save-exact @holochain/client
 
 ## Sample usage
 
-### Use AppAgentWebsocket with implicit zome call signing
+### Use AppWebsocket with implicit zome call signing
 ```typescript
-import { AdminWebsocket, AppAgentWebsocket, CellType } from "@holochain/client";
+import {
+  AdminWebsocket,
+  AppWebsocket,
+  CellType,
+  type ActionHash,
+  type CallZomeRequest,
+} from "@holochain/client";
 
-const adminWs = await AdminWebsocket.connect("ws://127.0.0.1:65000");
+const adminWs = await AdminWebsocket.connect({
+  url: new URL("ws://127.0.0.1:65000"),
+  wsClientOptions: { origin: "my-happ" },
+});
 const agent_key = await adminWs.generateAgentPubKey();
-const role_name = "role";
+const role_name = "foo";
 const installed_app_id = "test-app";
 const appInfo = await adminWs.installApp({
   agent_key,
-  path: "path/to/happ/file",
+  path: "./test/e2e/fixture/test.happ",
   installed_app_id,
   membrane_proofs: {},
 });
 await adminWs.enableApp({ installed_app_id });
 if (!(CellType.Provisioned in appInfo.cell_info[role_name][0])) {
-  process.exit();
+  throw new Error(`No cell found under role name ${role_name}`);
 }
 const { cell_id } = appInfo.cell_info[role_name][0][CellType.Provisioned];
 await adminWs.authorizeSigningCredentials(cell_id);
-await adminWs.attachAppInterface({ port: 65001 });
-const appAgentWs = await AppAgentWebsocket.connect(
-  "ws://127.0.0.1:65001",
-  installed_app_id
-);
-
-let signalCb;
-const signalReceived = new Promise<void>((resolve) => {
-  signalCb = (signal) => {
-    console.log("signal received", signal);
-    // act on signal
-    resolve();
-  };
+await adminWs.attachAppInterface({ port: 65001, allowed_origins: "my-happ" });
+const issuedToken = await adminWs.issueAppAuthenticationToken({
+  installed_app_id,
+});
+const appWs = await AppWebsocket.connect({
+  url: new URL("ws://127.0.0.1:65001"),
+  token: issuedToken.token,
+  wsClientOptions: { origin: "my-happ" },
 });
 
-appAgentWs.on("signal", signalCb);
-
-// trigger an emit_signal
-await appAgentWs.callZome({
-  role_name,
-  zome_name: "zome",
-  fn_name: "emitter",
+const zomeCallPayload: CallZomeRequest = {
+  cell_id,
+  zome_name: "foo",
+  fn_name: "foo",
+  provenance: agent_key,
   payload: null,
-});
-await signalReceived;
+};
 
-await appAgentWs.appWebsocket.client.close();
+const response: ActionHash = await appWs.callZome(zomeCallPayload, 30000);
+console.log("zome call response is", response);
+
+await appWs.client.close();
 await adminWs.client.close();
 ```
 
-### Use AppWebsocket with implicit zome call signing
+### Subscribe to signals
 ```typescript
 import { AdminWebsocket, AppWebsocket, CellType } from "@holochain/client";
 
-const adminWs = await AdminWebsocket.connect("ws://127.0.0.1:65000");
+const adminWs = await AdminWebsocket.connect({
+  url: new URL("ws://127.0.0.1:65000"),
+  wsClientOptions: { origin: "my-happ" },
+});
 const agent_key = await adminWs.generateAgentPubKey();
+const role_name = "foo";
 const installed_app_id = "test-app";
 const appInfo = await adminWs.installApp({
   agent_key,
-  path: "path/to/happ/file",
+  path: "./test/e2e/fixture/test.happ",
   installed_app_id,
   membrane_proofs: {},
 });
 await adminWs.enableApp({ installed_app_id });
-if (!(CellType.Provisioned in appInfo.cell_info["role"][0])) {
-  process.exit();
+if (!(CellType.Provisioned in appInfo.cell_info[role_name][0])) {
+  throw new Error(`No cell found under role name ${role_name}`);
 }
-const { cell_id } = appInfo.cell_info["role"][0][CellType.Provisioned];
+const { cell_id } = appInfo.cell_info[role_name][0][CellType.Provisioned];
 await adminWs.authorizeSigningCredentials(cell_id);
-await adminWs.attachAppInterface({ port: 65001 });
-const appWs = await AppWebsocket.connect("ws://127.0.0.1:65001");
+await adminWs.attachAppInterface({ port: 65001, allowed_origins: "my-happ" });
+const issuedToken = await adminWs.issueAppAuthenticationToken({
+  installed_app_id,
+});
+const appWs = await AppWebsocket.connect({
+  url: new URL("ws://127.0.0.1:65001"),
+  token: issuedToken.token,
+  wsClientOptions: { origin: "my-happ" },
+});
 
 let signalCb;
 const signalReceived = new Promise<void>((resolve) => {
@@ -109,7 +131,7 @@ appWs.on("signal", signalCb);
 // trigger an emit_signal
 await appWs.callZome({
   cell_id,
-  zome_name: "zome",
+  zome_name: "foo",
   fn_name: "emitter",
   provenance: agent_key,
   payload: null,
@@ -149,13 +171,6 @@ setSigningCredentials(cell_id, signingCredentials);
 localStorage.setItem(cellIdB64, JSON.stringify(signingCredentials));
 ```
 
-# Holochain Compatibility
-
-See [default.nix](./default.nix) for the Holochain version this package is compatible with.
-
-If updating the Holochain version included in holonix, please use `niv update` as explained in the
-[Holochain Installation Guide](https://developer.holochain.org/install-advanced/#upgrading-the-holochain-version).
-
 ## Running tests
 
 You need a version (`stable` toolchain) of Rust available.
@@ -164,8 +179,9 @@ You need `holochain` and `hc` on your path, best to get them from nix with `nix-
 
 To perform the pre-requisite DNA compilation steps, and run the Nodejs test, run:
 ```bash
-nix-shell
-./run-test.sh
+nix develop
+./build-fixture.sh
+npm run test
 ```
 
 ## Contribute
@@ -178,7 +194,7 @@ Holochain is an open source project.  We welcome all sorts of participation and 
 
  [![License: CAL 1.0](https://img.shields.io/badge/License-CAL%201.0-blue.svg)](https://github.com/holochain/cryptographic-autonomy-license)
 
-Copyright (C) 2020-2023, Holochain Foundation
+Copyright (C) 2020-2024, Holochain Foundation
 
 This program is free software: you can redistribute it and/or modify it under the terms of the license
 provided in the LICENSE file (CAL-1.0).  This program is distributed in the hope that it will be useful,

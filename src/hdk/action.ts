@@ -7,7 +7,16 @@ import {
   Signature,
   Timestamp,
 } from "../types.js";
-import { EntryType } from "./entry.js";
+import { Entry, EntryType } from "./entry.js";
+import { LinkTag, LinkType, RateWeight } from "./link.js";
+
+/**
+ * @public
+ */
+export interface SignedAction {
+  data: Action;
+  signature: Signature;
+}
 
 /**
  * @public
@@ -15,6 +24,14 @@ import { EntryType } from "./entry.js";
 export interface SignedActionHashed<H extends Action = Action> {
   hashed: HoloHashed<H>;
   signature: Signature;
+}
+
+/**
+ * @public
+ */
+export interface RegisterAgentActivity {
+  action: SignedActionHashed;
+  cached_entry?: Entry;
 }
 
 /**
@@ -107,8 +124,11 @@ export interface CreateLink {
 
   base_address: EntryHash;
   target_address: EntryHash;
-  zome_id: number;
-  tag: any;
+  zome_index: number;
+  link_type: LinkType;
+  tag: LinkTag;
+
+  weight: RateWeight;
 }
 
 /**

@@ -5,12 +5,10 @@
 ## AddAgentInfoRequest type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type AddAgentInfoRequest = {
-    agent_infos: Array<AgentInfoSigned>;
+export type AddAgentInfoRequest = {
+    agent_infos: Array<string>;
 };
 ```
-<b>References:</b> [AgentInfoSigned](./client.agentinfosigned.md)
-

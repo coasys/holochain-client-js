@@ -6,19 +6,48 @@
 
 Close the websocket connection.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-close(code?: number): Promise<void>;
+close(code?: number): Promise<IsoWebSocket.CloseEvent>;
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  code | number | <i>(Optional)</i> |
+<table><thead><tr><th>
 
-<b>Returns:</b>
+Parameter
 
-Promise&lt;void&gt;
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+code
+
+
+</td><td>
+
+number
+
+
+</td><td>
+
+_(Optional)_
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;IsoWebSocket.CloseEvent&gt;
 

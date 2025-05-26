@@ -5,14 +5,15 @@
 ## GrantedFunctions type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type GrantedFunctions = {
-    [GrantedFunctionsType.All]: null;
+export type GrantedFunctions = {
+    type: "all";
 } | {
-    [GrantedFunctionsType.Listed]: [ZomeName, FunctionName][];
+    type: "listed";
+    value: [ZomeName, FunctionName][];
 };
 ```
-<b>References:</b> [GrantedFunctionsType.All](./client.grantedfunctionstype.md)<!-- -->, [GrantedFunctionsType.Listed](./client.grantedfunctionstype.md)<!-- -->, [ZomeName](./client.zomename.md)<!-- -->, [FunctionName](./client.functionname.md)
+**References:** [ZomeName](./client.zomename.md)<!-- -->, [FunctionName](./client.functionname.md)
 

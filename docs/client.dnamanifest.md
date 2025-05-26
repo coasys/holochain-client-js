@@ -5,16 +5,17 @@
 ## DnaManifest type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type DnaManifest = {
+export type DnaManifest = {
     manifest_version: string;
     name: string;
     network_seed?: NetworkSeed;
     properties?: DnaProperties;
     zomes: Array<ZomeManifest>;
+    lineage: DnaHashB64[];
 };
 ```
-<b>References:</b> [NetworkSeed](./client.networkseed.md)<!-- -->, [DnaProperties](./client.dnaproperties.md)<!-- -->, [ZomeManifest](./client.zomemanifest.md)
+**References:** [NetworkSeed](./client.networkseed.md)<!-- -->, [DnaProperties](./client.dnaproperties.md)<!-- -->, [ZomeManifest](./client.zomemanifest.md)<!-- -->, [DnaHashB64](./client.dnahashb64.md)
 

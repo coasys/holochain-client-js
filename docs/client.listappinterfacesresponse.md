@@ -5,8 +5,10 @@
 ## ListAppInterfacesResponse type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type ListAppInterfacesResponse = Array<number>;
+export type ListAppInterfacesResponse = Array<AppInterfaceInfo>;
 ```
+**References:** [AppInterfaceInfo](./client.appinterfaceinfo.md)
+

@@ -2,11 +2,49 @@
 
 [Home](./index.md) &gt; [@holochain/client](./client.md) &gt; [randomByteArray](./client.randombytearray.md)
 
-## randomByteArray variable
+## randomByteArray() function
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 randomByteArray: (length: number) => Promise<Uint8Array>
 ```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+length
+
+
+</td><td>
+
+number
+
+
+</td><td>
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;Uint8Array&gt;
+

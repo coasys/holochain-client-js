@@ -2,12 +2,54 @@
 
 [Home](./index.md) &gt; [@holochain/client](./client.md) &gt; [AppWebsocket](./client.appwebsocket.md) &gt; [enableCloneCell](./client.appwebsocket.enableclonecell.md)
 
-## AppWebsocket.enableCloneCell property
+## AppWebsocket.enableCloneCell() method
 
 Enable a disabled clone cell.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-enableCloneCell: Requester<EnableCloneCellRequest, EnableCloneCellResponse>;
+enableCloneCell(args: EnableCloneCellRequest): Promise<ClonedCell>;
 ```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+args
+
+
+</td><td>
+
+[EnableCloneCellRequest](./client.enableclonecellrequest.md)
+
+
+</td><td>
+
+Specify the clone cell to enable.
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;[ClonedCell](./client.clonedcell.md)<!-- -->&gt;
+
+The enabled clone cell.
+

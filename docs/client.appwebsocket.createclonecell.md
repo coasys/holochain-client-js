@@ -2,12 +2,54 @@
 
 [Home](./index.md) &gt; [@holochain/client](./client.md) &gt; [AppWebsocket](./client.appwebsocket.md) &gt; [createCloneCell](./client.appwebsocket.createclonecell.md)
 
-## AppWebsocket.createCloneCell property
+## AppWebsocket.createCloneCell() method
 
 Clone an existing provisioned cell.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-createCloneCell: Requester<CreateCloneCellRequest, CreateCloneCellResponse>;
+createCloneCell(args: CreateCloneCellRequest): Promise<ClonedCell>;
 ```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+args
+
+
+</td><td>
+
+[CreateCloneCellRequest](./client.createclonecellrequest.md)
+
+
+</td><td>
+
+Specify the cell to clone.
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;[ClonedCell](./client.clonedcell.md)<!-- -->&gt;
+
+The created clone cell.
+

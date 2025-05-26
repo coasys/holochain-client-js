@@ -5,7 +5,7 @@
 ## CreateCloneCellRequest interface
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface CreateCloneCellRequest 
@@ -13,11 +13,101 @@ export interface CreateCloneCellRequest
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [app\_id](./client.createclonecellrequest.app_id.md) |  | [InstalledAppId](./client.installedappid.md) | The app id that the DNA to clone belongs to |
-|  [membrane\_proof?](./client.createclonecellrequest.membrane_proof.md) |  | [MembraneProof](./client.membraneproof.md) | <i>(Optional)</i> Optionally set a proof of membership for the new cell. |
-|  [modifiers](./client.createclonecellrequest.modifiers.md) |  | { network\_seed?: [NetworkSeed](./client.networkseed.md)<!-- -->; properties?: [DnaProperties](./client.dnaproperties.md)<!-- -->; origin\_time?: [Timestamp](./client.timestamp.md)<!-- -->; } | Modifiers to set for the new cell. At least one of the modifiers must be set to obtain a distinct hash for the clone cell's DNA. |
-|  [name?](./client.createclonecellrequest.name.md) |  | string | <i>(Optional)</i> Optionally a name for the DNA clone. |
-|  [role\_name](./client.createclonecellrequest.role_name.md) |  | [RoleName](./client.rolename.md) | The DNA's role id to clone. |
+<table><thead><tr><th>
 
+Property
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[membrane\_proof?](./client.createclonecellrequest.membrane_proof.md)
+
+
+</td><td>
+
+
+</td><td>
+
+[MembraneProof](./client.membraneproof.md)
+
+
+</td><td>
+
+_(Optional)_ Optionally set a proof of membership for the new cell.
+
+
+</td></tr>
+<tr><td>
+
+[modifiers](./client.createclonecellrequest.modifiers.md)
+
+
+</td><td>
+
+
+</td><td>
+
+{ network\_seed?: [NetworkSeed](./client.networkseed.md)<!-- -->; properties?: [DnaProperties](./client.dnaproperties.md)<!-- -->; }
+
+
+</td><td>
+
+Modifiers to set for the new cell. At least one of the modifiers must be set to obtain a distinct hash for the clone cell's DNA.
+
+
+</td></tr>
+<tr><td>
+
+[name?](./client.createclonecellrequest.name.md)
+
+
+</td><td>
+
+
+</td><td>
+
+string
+
+
+</td><td>
+
+_(Optional)_ Optionally a name for the DNA clone.
+
+
+</td></tr>
+<tr><td>
+
+[role\_name](./client.createclonecellrequest.role_name.md)
+
+
+</td><td>
+
+
+</td><td>
+
+[RoleName](./client.rolename.md)
+
+
+</td><td>
+
+The DNA's role id to clone.
+
+
+</td></tr>
+</tbody></table>

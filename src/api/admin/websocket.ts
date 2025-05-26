@@ -1,18 +1,16 @@
 import { getLauncherEnvironment } from "../../environments/launcher.js";
-import {
-  CapSecret,
-  GrantedFunctions,
-  GrantedFunctionsType,
-} from "../../hdk/capabilities.js";
+import { CapSecret, GrantedFunctions } from "../../hdk/index.js";
 import type { AgentPubKey, CellId } from "../../types.js";
 import { WsClient } from "../client.js";
 import {
-  catchError,
   DEFAULT_TIMEOUT,
-  promiseTimeout,
+  HolochainError,
   Requester,
-  requesterTransformer,
   Transformer,
+  WebsocketConnectionOptions,
+  catchError,
+  promiseTimeout,
+  requesterTransformer,
 } from "../common.js";
 import {
   generateSigningKeyPair,
@@ -25,7 +23,6 @@ import {
   AdminApi,
   AgentInfoRequest,
   AgentInfoResponse,
-  AppStatusFilter,
   AttachAppInterfaceRequest,
   AttachAppInterfaceResponse,
   DeleteCloneCellRequest,
@@ -34,6 +31,10 @@ import {
   DisableAppResponse,
   DumpFullStateRequest,
   DumpFullStateResponse,
+  DumpNetworkMetricsRequest,
+  DumpNetworkMetricsResponse,
+  DumpNetworkStatsRequest,
+  DumpNetworkStatsResponse,
   DumpStateRequest,
   DumpStateResponse,
   EnableAppRequest,
@@ -46,6 +47,8 @@ import {
   GrantZomeCallCapabilityResponse,
   InstallAppRequest,
   InstallAppResponse,
+  IssueAppAuthenticationTokenRequest,
+  IssueAppAuthenticationTokenResponse,
   ListAppInterfacesRequest,
   ListAppInterfacesResponse,
   ListAppsRequest,
@@ -56,8 +59,14 @@ import {
   ListDnasResponse,
   RegisterDnaRequest,
   RegisterDnaResponse,
+  RevokeAgentKeyRequest,
+  RevokeAgentKeyResponse,
+  StorageInfoRequest,
+  StorageInfoResponse,
   UninstallAppRequest,
   UninstallAppResponse,
+  UpdateCoordinatorsRequest,
+  UpdateCoordinatorsResponse,
 } from "./types.js";
 
 /**
@@ -84,23 +93,31 @@ export class AdminWebsocket implements AdminApi {
   /**
    * Factory mehtod to create a new instance connected to the given URL.
    *
-   * @param url - A `ws://` URL used as the connection address.
-   * @param defaultTimeout - The default timeout for any request.
+   * @param options - {@link (WebsocketConnectionOptions:interface)}
    * @returns A promise for a new connected instance.
    */
   static async connect(
-    url: string,
-    defaultTimeout?: number
+    options: WebsocketConnectionOptions = {}
   ): Promise<AdminWebsocket> {
     // Check if we are in the launcher's environment, and if so, redirect the url to connect to
     const env = getLauncherEnvironment();
 
     if (env?.ADMIN_INTERFACE_PORT) {
-      url = `ws://127.0.0.1:${env.ADMIN_INTERFACE_PORT}`;
+      options.url = new URL(`ws://localhost:${env.ADMIN_INTERFACE_PORT}`);
     }
 
-    const wsClient = await WsClient.connect(url);
-    return new AdminWebsocket(wsClient, defaultTimeout);
+    if (!options.url) {
+      throw new HolochainError(
+        "ConnectionUrlMissing",
+        `unable to connect to Conductor API - no url provided and not in a launcher environment.`
+      );
+    }
+
+    const wsClient = await WsClient.connect(
+      options.url,
+      options.wsClientOptions
+    );
+    return new AdminWebsocket(wsClient, options.defaultTimeout);
   }
 
   _requester<ReqI, ReqO, ResI, ResO>(
@@ -163,6 +180,12 @@ export class AdminWebsocket implements AdminApi {
   > = this._requester("generate_agent_pub_key");
 
   /**
+   * Generate a new agent pub key.
+   */
+  revokeAgentKey: Requester<RevokeAgentKeyRequest, RevokeAgentKeyResponse> =
+    this._requester("revoke_agent_key");
+
+  /**
    * Register a DNA for later app installation.
    *
    * Stores the given DNA into the Holochain DNA database and returns the hash of it.
@@ -191,6 +214,14 @@ export class AdminWebsocket implements AdminApi {
     this._requester("install_app");
 
   /**
+   * Update coordinators for an installed app.
+   */
+  updateCoordinators: Requester<
+    UpdateCoordinatorsRequest,
+    UpdateCoordinatorsResponse
+  > = this._requester("update_coordinators");
+
+  /**
    * List all registered DNAs.
    */
   listDnas: Requester<ListDnasRequest, ListDnasResponse> =
@@ -205,10 +236,8 @@ export class AdminWebsocket implements AdminApi {
   /**
    * List all installed apps.
    */
-  listApps: Requester<ListAppsRequest, ListAppsResponse> = this._requester(
-    "list_apps",
-    listAppsTransform
-  );
+  listApps: Requester<ListAppsRequest, ListAppsResponse> =
+    this._requester("list_apps");
 
   /**
    * List all attached app interfaces.
@@ -245,6 +274,24 @@ export class AdminWebsocket implements AdminApi {
     GrantZomeCallCapabilityResponse
   > = this._requester("grant_zome_call_capability");
 
+  storageInfo: Requester<StorageInfoRequest, StorageInfoResponse> =
+    this._requester("storage_info");
+
+  issueAppAuthenticationToken: Requester<
+    IssueAppAuthenticationTokenRequest,
+    IssueAppAuthenticationTokenResponse
+  > = this._requester("issue_app_authentication_token");
+
+  dumpNetworkStats: Requester<
+    DumpNetworkStatsRequest,
+    DumpNetworkStatsResponse
+  > = this._requester("dump_network_stats");
+
+  dumpNetworkMetrics: Requester<
+    DumpNetworkMetricsRequest,
+    DumpNetworkMetricsResponse
+  > = this._requester("dump_network_metrics");
+
   // zome call signing related methods
 
   /**
@@ -267,7 +314,8 @@ export class AdminWebsocket implements AdminApi {
         tag: "zome-call-signing-key",
         functions,
         access: {
-          Assigned: {
+          type: "assigned",
+          value: {
             secret: capSecret,
             assignees: [signingKey],
           },
@@ -289,42 +337,15 @@ export class AdminWebsocket implements AdminApi {
     cellId: CellId,
     functions?: GrantedFunctions
   ) => {
-    const [keyPair, signingKey] = generateSigningKeyPair();
+    const [keyPair, signingKey] = await generateSigningKeyPair();
     const capSecret = await this.grantSigningKey(
       cellId,
-      functions || { [GrantedFunctionsType.All]: null },
+      functions || { type: "all" },
       signingKey
     );
     setSigningCredentials(cellId, { capSecret, keyPair, signingKey });
   };
 }
-
-interface InternalListAppsRequest {
-  status_filter?:
-    | { Running: null }
-    | { Enabled: null }
-    | { Paused: null }
-    | { Disabled: null }
-    | { Stopped: null };
-}
-
-const listAppsTransform: Transformer<
-  ListAppsRequest,
-  InternalListAppsRequest,
-  ListAppsResponse,
-  ListAppsResponse
-> = {
-  input: (req) => {
-    const args: InternalListAppsRequest = {};
-
-    if (req.status_filter) {
-      args.status_filter = getAppStatusInApiForm(req.status_filter);
-    }
-
-    return args;
-  },
-  output: (res) => res,
-};
 
 const dumpStateTransform: Transformer<
   DumpStateRequest,
@@ -337,28 +358,3 @@ const dumpStateTransform: Transformer<
     return JSON.parse(res);
   },
 };
-
-function getAppStatusInApiForm(status_filter: AppStatusFilter) {
-  switch (status_filter) {
-    case AppStatusFilter.Running:
-      return {
-        Running: null,
-      };
-    case AppStatusFilter.Enabled:
-      return {
-        Enabled: null,
-      };
-    case AppStatusFilter.Paused:
-      return {
-        Paused: null,
-      };
-    case AppStatusFilter.Disabled:
-      return {
-        Disabled: null,
-      };
-    case AppStatusFilter.Stopped:
-      return {
-        Stopped: null,
-      };
-  }
-}

@@ -4,22 +4,50 @@
 
 ## AppWebsocket.connect() method
 
-Instance factory for creating AppWebsockets.
+Instance factory for creating an [AppWebsocket](./client.appwebsocket.md)<!-- -->.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-static connect(url: string, defaultTimeout?: number): Promise<AppWebsocket>;
+static connect(options?: AppWebsocketConnectionOptions): Promise<AppWebsocket>;
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  url | string | The <code>ws://</code> URL of the App API to connect to. |
-|  defaultTimeout | number | <i>(Optional)</i> Timeout to default to for all operations. |
+<table><thead><tr><th>
 
-<b>Returns:</b>
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+options
+
+
+</td><td>
+
+[AppWebsocketConnectionOptions](./client.appwebsocketconnectionoptions.md)
+
+
+</td><td>
+
+_(Optional)_ [WebsocketConnectionOptions](./client.websocketconnectionoptions.md)
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
 
 Promise&lt;[AppWebsocket](./client.appwebsocket.md)<!-- -->&gt;
 

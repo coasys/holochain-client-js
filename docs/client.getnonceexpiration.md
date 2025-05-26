@@ -2,11 +2,15 @@
 
 [Home](./index.md) &gt; [@holochain/client](./client.md) &gt; [getNonceExpiration](./client.getnonceexpiration.md)
 
-## getNonceExpiration variable
+## getNonceExpiration() function
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 getNonceExpiration: () => number
 ```
+**Returns:**
+
+number
+

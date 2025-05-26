@@ -2,29 +2,11 @@
 
 [Home](./index.md) &gt; [@holochain/client](./client.md) &gt; [CloneId](./client.cloneid.md)
 
-## CloneId class
+## CloneId type
 
-Identifier of a clone cell, composed of the DNA's role id and the index of the clone, starting at 0.
 
-Example: `profiles.0`
-
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare class CloneId 
+export type CloneId = string;
 ```
-
-## Constructors
-
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(roleName, index)](./client.cloneid._constructor_.md) |  | Constructs a new instance of the <code>CloneId</code> class |
-
-## Methods
-
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [fromRoleName(roleName)](./client.cloneid.fromrolename.md) | <code>static</code> | Parse a role id of a clone cell to obtain a clone id instance. |
-|  [getBaseRoleName()](./client.cloneid.getbaserolename.md) |  |  |
-|  [toString()](./client.cloneid.tostring.md) |  |  |
-

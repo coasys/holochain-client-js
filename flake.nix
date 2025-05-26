@@ -2,7 +2,7 @@
   description = "Nix shell for Holochain app development";
 
   inputs = {
-    holonix.url = "github:holochain/holochain";
+    holonix.url = "github:holochain/holonix?ref=main";
     nixpkgs.follows = "holonix/nixpkgs";
   };
 
@@ -11,14 +11,20 @@
       # provide a dev shell for all systems that the holonix flake supports
       systems = builtins.attrNames holonix.devShells;
 
-      perSystem = { config, system, pkgs, ... }:
+      perSystem = { inputs', pkgs, ... }:
         {
           devShells.default = pkgs.mkShell {
-            inputsFrom = [ holonix.devShells.${system}.holonix ];
-            packages = with pkgs; [
+            packages = [
+              inputs'.holonix.packages.holochain
+              inputs'.holonix.packages.lair-keystore
+              inputs'.holonix.packages.rust
               # add further packages from nixpkgs
-              nodejs
+              pkgs.nodejs
             ];
+
+            shellHook = ''
+              export PS1='\[\033[1;34m\][holonix:\w]\$\[\033[0m\] '
+            '';
           };
         };
     };

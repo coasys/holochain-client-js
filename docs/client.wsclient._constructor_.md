@@ -6,15 +6,74 @@
 
 Constructs a new instance of the `WsClient` class
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-constructor(socket: Websocket);
+constructor(socket: IsoWebSocket, url?: URL, options?: WsClientOptions);
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  socket | Websocket |  |
+<table><thead><tr><th>
 
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+socket
+
+
+</td><td>
+
+IsoWebSocket
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+url
+
+
+</td><td>
+
+URL
+
+
+</td><td>
+
+_(Optional)_
+
+
+</td></tr>
+<tr><td>
+
+options
+
+
+</td><td>
+
+[WsClientOptions](./client.wsclientoptions.md)
+
+
+</td><td>
+
+_(Optional)_
+
+
+</td></tr>
+</tbody></table>

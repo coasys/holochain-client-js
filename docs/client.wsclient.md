@@ -4,37 +4,217 @@
 
 ## WsClient class
 
-A Websocket client which can make requests and receive responses, as well as send and receive signals.
+A WebSocket client which can make requests and receive responses, as well as send and receive signals.
 
-Uses Holochain's websocket WireMessage for communication.
+Uses Holochain's WireMessage for communication.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export declare class WsClient extends Emittery 
 ```
-<b>Extends:</b> Emittery
+**Extends:** Emittery
 
 ## Constructors
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(socket)](./client.wsclient._constructor_.md) |  | Constructs a new instance of the <code>WsClient</code> class |
+<table><thead><tr><th>
+
+Constructor
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[(constructor)(socket, url, options)](./client.wsclient._constructor_.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Constructs a new instance of the `WsClient` class
+
+
+</td></tr>
+</tbody></table>
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [index](./client.wsclient.index.md) |  | number |  |
-|  [pendingRequests](./client.wsclient.pendingrequests.md) |  | Record&lt;number, { resolve: (msg: unknown) =&gt; ReturnType&lt;typeof decode&gt;; reject: (error: Error) =&gt; void; }&gt; |  |
-|  [socket](./client.wsclient.socket.md) |  | Websocket |  |
+<table><thead><tr><th>
+
+Property
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[options](./client.wsclient.options.md)
+
+
+</td><td>
+
+
+</td><td>
+
+[WsClientOptions](./client.wsclientoptions.md)
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+[socket](./client.wsclient.socket.md)
+
+
+</td><td>
+
+
+</td><td>
+
+IsoWebSocket
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+[url](./client.wsclient.url.md)
+
+
+</td><td>
+
+
+</td><td>
+
+URL \| undefined
+
+
+</td><td>
+
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [close(code)](./client.wsclient.close.md) |  | Close the websocket connection. |
-|  [connect(url)](./client.wsclient.connect.md) | <code>static</code> | Instance factory for creating WsClients. |
-|  [emitSignal(data)](./client.wsclient.emitsignal.md) |  | Sends data as a signal. |
-|  [request(request)](./client.wsclient.request.md) |  | Send requests to the connected websocket. |
+<table><thead><tr><th>
 
+Method
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[authenticate(request)](./client.wsclient.authenticate.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Authenticate the client with the conductor.
+
+This is only relevant for app websockets.
+
+
+</td></tr>
+<tr><td>
+
+[close(code)](./client.wsclient.close.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Close the websocket connection.
+
+
+</td></tr>
+<tr><td>
+
+[connect(url, options)](./client.wsclient.connect.md)
+
+
+</td><td>
+
+`static`
+
+
+</td><td>
+
+Instance factory for creating WsClients.
+
+
+</td></tr>
+<tr><td>
+
+[emitSignal(data)](./client.wsclient.emitsignal.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Sends data as a signal.
+
+
+</td></tr>
+<tr><td>
+
+[request(request)](./client.wsclient.request.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Send requests to the connected websocket.
+
+
+</td></tr>
+</tbody></table>

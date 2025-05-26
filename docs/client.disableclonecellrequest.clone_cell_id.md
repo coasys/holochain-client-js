@@ -6,8 +6,8 @@
 
 The clone id or cell id of the clone cell
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-clone_cell_id: RoleName | CellId;
+clone_cell_id: CloneCellId;
 ```

@@ -5,14 +5,17 @@
 ## DisabledAppReason type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type DisabledAppReason = {
-    never_started: null;
+export type DisabledAppReason = {
+    type: "never_started";
 } | {
-    user: null;
+    type: "user";
 } | {
-    error: string;
+    type: "not_started_after_providing_memproofs";
+} | {
+    type: "error";
+    value: string;
 };
 ```

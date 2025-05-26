@@ -5,10 +5,14 @@
 ## AttachAppInterfaceRequest type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type AttachAppInterfaceRequest = {
-    port: number;
+export type AttachAppInterfaceRequest = {
+    port?: number;
+    allowed_origins: string;
+    installed_app_id?: InstalledAppId;
 };
 ```
+**References:** [InstalledAppId](./client.installedappid.md)
+

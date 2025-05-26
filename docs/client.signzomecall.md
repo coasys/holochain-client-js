@@ -2,11 +2,49 @@
 
 [Home](./index.md) &gt; [@holochain/client](./client.md) &gt; [signZomeCall](./client.signzomecall.md)
 
-## signZomeCall variable
+## signZomeCall() function
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 signZomeCall: (request: CallZomeRequest) => Promise<CallZomeRequestSigned>
 ```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+request
+
+
+</td><td>
+
+[CallZomeRequest](./client.callzomerequest.md)
+
+
+</td><td>
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;[CallZomeRequestSigned](./client.callzomerequestsigned.md)<!-- -->&gt;
+

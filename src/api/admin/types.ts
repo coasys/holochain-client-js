@@ -4,6 +4,7 @@ import {
   AgentPubKey,
   CellId,
   DnaHash,
+  DnaHashB64,
   DnaProperties,
   Duration,
   HoloHash,
@@ -16,13 +17,25 @@ import {
   Timestamp,
   WasmHash,
 } from "../../types.js";
+import { CloneCellId } from "../app/types.js";
 import { Requester } from "../common.js";
-import { DisableCloneCellRequest } from "../index.js";
 
 /**
  * @public
  */
-export type AttachAppInterfaceRequest = { port: number };
+export type AttachAppInterfaceRequest = {
+  port?: number;
+  /**
+   * Comma separated list of origins, or `*` to allow any origin.
+   * For example: `http://localhost:3000,http://localhost:3001`
+   */
+  allowed_origins: string;
+  /**
+   * Optionally, bind this app interface to a specific installed app.
+   */
+  installed_app_id?: InstalledAppId;
+};
+
 /**
  * @public
  */
@@ -43,44 +56,39 @@ export type EnableAppResponse = {
 /**
  * @public
  */
-export type DeactivationReason =
-  | { never_activated: null }
-  | { normal: null }
-  | { quarantined: { error: string } };
-
-/**
- * @public
- */
 export type PausedAppReason = {
-  error: string;
+  type: "error";
+  value: string;
 };
 
 /**
  * @public
  */
 export type DisabledAppReason =
+  | { type: "never_started" }
+  | { type: "user" }
+  | { type: "not_started_after_providing_memproofs" }
   | {
-      never_started: null;
-    }
-  | { user: null }
-  | { error: string };
+      type: "error";
+      value: string;
+    };
 
 /**
  * @public
  */
-export type InstalledAppInfoStatus =
+export type AppInfoStatus =
   | {
-      paused: { reason: PausedAppReason };
+      type: "paused";
+      value: { reason: PausedAppReason };
     }
   | {
-      disabled: {
+      type: "disabled";
+      value: {
         reason: DisabledAppReason;
       };
     }
-  | {
-      running: null;
-    };
-
+  | { type: "awaiting_memproofs" }
+  | { type: "running" };
 /**
  * @public
  */
@@ -124,9 +132,18 @@ export enum CellType {
  * @public
  */
 export type CellInfo =
-  | { [CellType.Provisioned]: ProvisionedCell }
-  | { [CellType.Cloned]: ClonedCell }
-  | { [CellType.Stem]: StemCell };
+  | {
+      type: CellType.Provisioned;
+      value: ProvisionedCell;
+    }
+  | {
+      type: CellType.Cloned;
+      value: ClonedCell;
+    }
+  | {
+      type: CellType.Stem;
+      value: StemCell;
+    };
 
 /**
  * @public
@@ -135,13 +152,56 @@ export type AppInfo = {
   agent_pub_key: AgentPubKey;
   installed_app_id: InstalledAppId;
   cell_info: Record<RoleName, Array<CellInfo>>;
-  status: InstalledAppInfoStatus;
+  status: AppInfoStatus;
+  installed_at: Timestamp;
 };
 
 /**
  * @public
  */
-export type MembraneProof = Buffer;
+export type MembraneProof = Uint8Array;
+
+/**
+ * @public
+ */
+export type MemproofMap = { [key: RoleName]: MembraneProof };
+
+/**
+ * @public
+ */
+export type RoleSettingsMap = { [key: RoleName]: RoleSettings };
+
+/**
+ * @public
+ */
+export type RoleSettings =
+  | {
+      type: "use_existing";
+      value: {
+        cell_id: CellId;
+      };
+    }
+  | {
+      type: "provisioned";
+      value: {
+        membrane_proof?: MembraneProof;
+        modifiers?: DnaModifiersOpt;
+      };
+    };
+
+/**
+ *  @public
+ * Any value that is serializable to a Yaml value
+ */
+export type YamlProperties = unknown;
+
+/**
+ * @public
+ */
+export type DnaModifiersOpt = {
+  network_seed?: NetworkSeed;
+  properties?: YamlProperties;
+};
 
 /**
  * @public
@@ -175,7 +235,7 @@ export type DumpStateResponse = any;
  */
 export type DumpFullStateRequest = {
   cell_id: CellId;
-  dht_ops_cursor: number | undefined;
+  dht_ops_cursor?: number;
 };
 /**
  * @public
@@ -194,12 +254,30 @@ export type GenerateAgentPubKeyResponse = AgentPubKey;
 /**
  * @public
  */
+export type RevokeAgentKeyRequest = {
+  agent_key: AgentPubKey;
+  app_id: InstalledAppId;
+};
+/**
+ * Contains a list of errors of the cells where deletion was unsuccessful.
+ *
+ * If the key could not be deleted from all cells, the call
+ * {@link RevokeAgentKeyRequest} can be re-attempted to delete the key from the remaining cells.
+ *
+ * @public
+ */
+export type RevokeAgentKeyResponse = [CellId, string][];
+
+/**
+ * @public
+ */
 export type RegisterDnaRequest = {
+  source: DnaSource;
   modifiers?: {
     network_seed?: string;
     properties?: DnaProperties;
   };
-} & DnaSource;
+};
 
 /**
  * @public
@@ -211,9 +289,7 @@ export type RegisterDnaResponse = HoloHash;
  */
 export type DnaModifiers = {
   network_seed: NetworkSeed;
-  properties: DnaProperties;
-  origin_time: Timestamp;
-  quantum_time: Duration;
+  properties: Uint8Array;
 };
 
 /**
@@ -246,6 +322,7 @@ export type CoordinatorZome = ZomeDefinition;
 export type DnaDefinition = {
   name: string;
   modifiers: DnaModifiers;
+  lineage: DnaHashB64[];
   integrity_zomes: IntegrityZome[];
   coordinator_zomes: CoordinatorZome[];
 };
@@ -269,6 +346,19 @@ export type UninstallAppRequest = {
  * @public
  */
 export type UninstallAppResponse = null;
+
+/**
+ * @public
+ */
+export type UpdateCoordinatorsRequest = {
+  source: CoordinatorSource;
+  dna_hash: DnaHash;
+};
+
+/**
+ * @public
+ */
+export type UpdateCoordinatorsResponse = void;
 
 /**
  * @public
@@ -382,6 +472,7 @@ export type AppManifest = {
   name: string;
   description?: string;
   roles: Array<AppRoleManifest>;
+  membrane_proofs_deferred: boolean;
 };
 /**
  * @public
@@ -398,7 +489,15 @@ export type AppBundle = {
 /**
  * @public
  */
-export type AppBundleSource = { bundle: AppBundle } | { path: string };
+export type AppBundleSource =
+  | {
+      type: "path";
+      value: string;
+    }
+  | {
+      type: "bytes";
+      value: Uint8Array;
+    };
 
 /**
  * @public
@@ -408,20 +507,43 @@ export type NetworkSeed = string;
  * @public
  */
 export type InstallAppRequest = {
-  // The agent to use when creating Cells for this App.
-  agent_key: AgentPubKey;
+  /**
+   * Where to obtain the AppBundle, which contains the app manifest and DNA bundles
+   * to be installed. This is the main payload of app installation.
+   */
+  source: AppBundleSource;
+  /**
+   * The agent to use when creating Cells for this App.
+   * If not specified, a new agent will be generated by Holochain.
+   * If DPKI is enabled (default), and the agent key is not specified here,
+   * a new agent key will be derived from the DPKI device seed and registered with DPKI.
+   */
+  agent_key?: AgentPubKey;
 
-  // The unique identifier for an installed app in this conductor.
-  // If not specified, it will be derived from the app name in the bundle manifest.
+  /**
+   * The unique identifier for an installed app in this conductor.
+   * If not specified, it will be derived from the app name in the bundle manifest.
+   */
   installed_app_id?: InstalledAppId;
 
-  // Include proof-of-membrane-membership data for cells that require it,
-  // keyed by the CellNick specified in the app bundle manifest.
-  membrane_proofs: { [key: string]: MembraneProof };
-
-  // Optional global network seed override.  If set will override the network seed value for all DNAs in the bundle.
+  /**
+   * Optional global network seed override.  If set will override the network seed value for all
+   * DNAs in the bundle.
+   */
   network_seed?: NetworkSeed;
-} & AppBundleSource; // The unique identifier for an installed app in this conductor.
+
+  /**
+   * Specify role specific settings or modifiers that will override any settings in the dna manifest.
+   */
+  roles_settings?: RoleSettingsMap;
+
+  /**
+   * Optional: If app installation fails due to genesis failure, normally the app will be immediately uninstalled.
+   * When this flag is set, the app is left installed with empty cells intact. This can be useful for
+   * using graft_records_onto_source_chain, or for diagnostics.
+   */
+  ignore_genesis_failure?: boolean;
+}; // The unique identifier for an installed app in this conductor.
 
 /**
  * @public
@@ -489,7 +611,16 @@ export type ListAppInterfacesRequest = void;
 /**
  * @public
  */
-export type ListAppInterfacesResponse = Array<number>;
+export type ListAppInterfacesResponse = Array<AppInterfaceInfo>;
+
+/**
+ * @public
+ */
+export interface AppInterfaceInfo {
+  port: number;
+  allowed_origins: string;
+  installed_app_id?: InstalledAppId;
+}
 
 /**
  * This type is meant to be opaque
@@ -511,22 +642,31 @@ export type AgentInfoRequest = { cell_id: CellId | null };
 /**
  * @public
  */
-export type AgentInfoResponse = Array<AgentInfoSigned>;
+export type AgentInfoResponse = Array<string>;
 
 /**
  * @public
  */
-export type AddAgentInfoRequest = { agent_infos: Array<AgentInfoSigned> };
+export type AddAgentInfoRequest = { agent_infos: Array<string> };
 
 /**
  * @public
  */
-export type AddAgentInfoResponse = any;
+export type AddAgentInfoResponse = unknown;
 
 /**
  * @public
  */
-export type DeleteCloneCellRequest = DisableCloneCellRequest;
+export interface DeleteCloneCellRequest {
+  /**
+   * The app id that the clone cell belongs to
+   */
+  app_id: InstalledAppId;
+  /**
+   * The clone id or cell id of the clone cell
+   */
+  clone_cell_id: CloneCellId;
+}
 
 /**
  * @public
@@ -570,10 +710,46 @@ export type ZomeLocation = Location;
 /**
  * @public
  */
+export interface ZomeDependency {
+  name: ZomeName;
+}
+
+/**
+ * @public
+ */
 export type ZomeManifest = {
   name: string;
   hash?: string;
+  dependencies?: ZomeDependency[];
 } & ZomeLocation;
+
+/**
+ * @public
+ */
+export interface CoordinatorManifest {
+  zomes: Array<ZomeManifest>;
+}
+
+/**
+ * @public
+ */
+export interface CoordinatorBundle {
+  manifest: CoordinatorManifest;
+  resources: ResourceMap;
+}
+
+/**
+ * @public
+ */
+export type CoordinatorSource =
+  | {
+      type: "path";
+      value: string;
+    }
+  | {
+      type: "bundle";
+      value: CoordinatorBundle;
+    };
 
 /**
  * @public
@@ -604,6 +780,27 @@ export type DnaManifest = {
    * The order is significant: it determines initialization order.
    */
   zomes: Array<ZomeManifest>;
+
+  /**
+   *  A list of past "ancestors" of this DNA.
+   *
+   * Whenever a DNA is created which is intended to be used as a migration from
+   * a previous DNA, the lineage should be updated to include the hash of the
+   * DNA being migrated from. DNA hashes may also be removed from this list if
+   * it is desired to remove them from the lineage.
+   *
+   * The meaning of the "ancestor" relationship is as follows:
+   * - For any DNA, there is a migration path from any of its ancestors to itself.
+   * - When an app depends on a DnaHash via UseExisting, it means that any installed
+   *     DNA in the lineage which contains that DnaHash can be used.
+   * - The app's Coordinator interface is expected to be compatible across the lineage.
+   *     (Though this cannot be enforced, since Coordinators can be swapped out at
+   *      will by the user, the intention is still there.)
+   *
+   * Holochain does nothing to ensure the correctness of the lineage, it is up to
+   * the app developer to make the necessary guarantees.
+   */
+  lineage: DnaHashB64[];
 };
 
 /**
@@ -619,13 +816,16 @@ export type DnaBundle = {
  */
 export type DnaSource =
   | {
-      hash: HoloHash;
+      type: "path";
+      value: string;
     }
   | {
-      path: string;
+      type: "bundle";
+      value: DnaBundle;
     }
   | {
-      bundle: DnaBundle;
+      type: "hash";
+      value: HoloHash;
     };
 
 /**
@@ -709,6 +909,360 @@ export interface FullStateDump {
 /**
  * @public
  */
+export interface DnaStorageInfo {
+  authored_data_size: number;
+  authored_data_size_on_disk: number;
+  dht_data_size: number;
+  dht_data_size_on_disk: number;
+  cache_data_size: number;
+  cache_data_size_on_disk: number;
+  used_by: Array<InstalledAppId>;
+}
+
+/**
+ * @public
+ */
+export type DnaStorageBlob = {
+  type: "dna";
+  value: DnaStorageInfo;
+};
+
+/**
+ * @public
+ */
+export interface StorageInfo {
+  blobs: Array<DnaStorageBlob>;
+}
+
+/**
+ * @public
+ */
+export type StorageInfoRequest = void;
+
+/**
+ * @public
+ */
+export type StorageInfoResponse = StorageInfo;
+
+/**
+ * @public
+ */
+export interface IssueAppAuthenticationTokenRequest {
+  installed_app_id: InstalledAppId;
+  expiry_seconds?: number;
+  single_use?: boolean;
+}
+
+/**
+ * @public
+ */
+export type AppAuthenticationToken = number[];
+
+/**
+ * @public
+ */
+export interface IssueAppAuthenticationTokenResponse {
+  token: AppAuthenticationToken;
+  expires_at?: Timestamp;
+}
+
+/**
+ * @public
+ */
+export type DumpNetworkStatsRequest = void;
+
+/**
+ * Stats for a transport connection.
+ *
+ * This is intended to be a state dump that gives some insight into what the transport is doing.
+ *
+ * @public
+ */
+export interface TransportStats {
+  /**
+   * The networking backend that is in use.
+   */
+  backend: string;
+
+  /**
+   * The list of peer urls that this Kitsune2 instance can currently be reached at.
+   */
+  peer_urls: string[];
+
+  /**
+   * The list of current connections.
+   *
+   * @public
+   */
+  connections: TransportConnectionStats[];
+}
+
+/**
+ * Stats for a single transport connection.
+ *
+ * @public
+ */
+export interface TransportConnectionStats {
+  /**
+   * The public key of the remote peer.
+   */
+  pub_key: string;
+
+  /**
+   * The message count sent on this connection.
+   */
+  send_message_count: number;
+
+  /**
+   * The bytes sent on this connection.
+   */
+  send_bytes: number;
+
+  /**
+   * The message count received on this connection.
+   */
+  recv_message_count: number;
+
+  /**
+   * The bytes received on this connection
+   */
+  recv_bytes: number;
+
+  /**
+   * UNIX epoch timestamp in seconds when this connection was opened.
+   */
+  opened_at_s: number;
+
+  /**
+   * True if this connection has successfully upgraded to webrtc.
+   */
+  is_webrtc: boolean;
+}
+
+/**
+ * @public
+ */
+export type DumpNetworkStatsResponse = TransportStats;
+
+/**
+ * Arguments for dumping network metrics.
+ *
+ * @public
+ */
+export interface DumpNetworkMetricsRequest {
+  /**
+   * The DNA hash of the app network to dump.
+   */
+  dna?: DnaHash;
+
+  /**
+   * Include DHT summary in the response.
+   */
+  include_dht_summary: boolean;
+}
+
+/**
+ * The definition of a storage arc compatible with the concept of
+ * storage and querying of items in a store that fall within that arc.
+ *
+ * @public
+ */
+export type DhtArc =
+  |
+  /**
+   * No DHT locations are contained within this arc.
+   */
+  null
+  /**
+   * A specific range of DHT locations are contained within this arc.
+   *
+   * The lower and upper bounds are inclusive.
+   */
+  | [number, number];
+/**
+ * Summary of a local agent's network state.
+ *
+ * @public
+ */
+export interface LocalAgentSummary {
+  /**
+   * The agent's public key.
+   */
+  agent: AgentPubKey;
+
+  /**
+   * The current storage arc that the agent is declaring.
+   *
+   * This is the arc that the agent is claiming that it is an authority for.
+   */
+  storage_arc: DhtArc;
+
+  /**
+   * The target arc that the agent is trying to achieve as a storage arc.
+   *
+   * This is not declared to other peers on the network. It is used during gossip to try to sync
+   * ops in the target arc. Once the DHT state appears to be in sync with the target arc, the
+   * storage arc can be updated towards the target arc.
+   */
+  target_arc: DhtArc;
+}
+
+/**
+ * Summary of the fetch state.
+ *
+ * @public
+ */
+export interface FetchStateSummary {
+  /**
+   * The op ids that are currently being fetched.
+   *
+   * Each op id is associated with one or more peer URL from which the op data could be
+   * requested.
+   */
+  pending_requests: Record<HoloHashB64, string[]>;
+
+  /**
+   * The peer URL for nodes that are currently on backoff because of failed fetch requests, and the timestamp when that backoff will expire.
+   *
+   * If peers are in here then they are not being used as potential sources in
+   * [`FetchStateSummary::pending_requests`].
+   */
+  peers_on_backoff: Map<string, number>;
+}
+
+/**
+ * DHT segment state.
+ *
+ * @public
+ */
+export interface DhtSegmentState {
+  /**
+   * The top hash of the DHT ring segment.
+   */
+  disc_top_hash: Uint8Array;
+  /**
+   * The boundary timestamp of the DHT ring segment.
+   */
+  disc_boundary: Timestamp;
+  /**
+   * The top hashes of each DHT ring segment.
+   */
+  ring_top_hashes: Uint8Array[];
+}
+
+/**
+ * Peer metadata dump.
+ *
+ * @public
+ */
+export interface PeerMeta {
+  /**
+   * The timestamp of the last gossip round.
+   */
+  last_gossip_timestamp?: Timestamp;
+  /**
+   * The bookmark of the last op bookmark received.
+   */
+  new_ops_bookmark?: Timestamp;
+  /**
+   * The number of behavior errors observed.
+   */
+  peer_behavior_errors?: number;
+  /**
+   * The number of local errors.
+   */
+  local_errors?: number;
+  /**
+   * The number of busy peer errors.
+   */
+  peer_busy?: number;
+  /**
+   * The number of terminated rounds.
+   *
+   * Note that termination is not necessarily an error.
+   */
+  peer_terminated?: number;
+  /**
+   * The number of completed rounds.
+   */
+  completed_rounds?: number;
+  /**
+   * The number of peer timeouts.
+   */
+  peer_timeouts?: number;
+}
+
+/**
+ * Gossip round state summary.
+ *
+ * @public
+ */
+export interface GossipRoundStateSummary {
+  /**
+   * The URL of the peer with which the round is initiated.
+   */
+  session_with_peer: string;
+}
+
+/**
+ * Gossip state summary.
+ *
+ * @public
+ */
+export interface GossipStateSummary {
+  /**
+   * The current initiated round summary.
+   */
+  initiated_round?: GossipRoundStateSummary;
+  /**
+   * The list of accepted round summaries.
+   */
+  accepted_rounds: GossipRoundStateSummary[];
+  /**
+   * DHT summary.
+   */
+  dht_summary: Record<string, DhtSegmentState>;
+  /**
+   * Peer metadata dump for each agent in this space.
+   */
+  peer_meta: Record<string, PeerMeta>;
+}
+
+/**
+ * Network metrics from Kitsune2.
+ *
+ * @public
+ */
+export interface NetworkMetrics {
+  /**
+   * A summary of the fetch queue.
+   *
+   * The fetch queue is used to retrieve op data based on op ids that have been discovered
+   * through publish or gossip.
+   */
+  fetch_state_summary: FetchStateSummary;
+  /**
+   * A summary of the gossip state.
+   *
+   * This includes both live gossip rounds and metrics about peers that we've gossiped with.
+   * Optionally, it can include a summary of the DHT state as Kitsune2 sees it.
+   */
+  gossip_state_summary: GossipStateSummary;
+
+  /**
+   * A summary of the state of each local agent.
+   */
+  local_agents: LocalAgentSummary[];
+}
+
+/**
+ * @public
+ */
+export type DumpNetworkMetricsResponse = Record<DnaHashB64, NetworkMetrics>;
+
+/**
+ * @public
+ */
 export interface AdminApi {
   attachAppInterface: Requester<
     AttachAppInterfaceRequest,
@@ -742,5 +1296,14 @@ export interface AdminApi {
   grantZomeCallCapability: Requester<
     GrantZomeCallCapabilityRequest,
     GrantZomeCallCapabilityResponse
+  >;
+  storageInfo: Requester<StorageInfoRequest, StorageInfoResponse>;
+  issueAppAuthenticationToken: Requester<
+    IssueAppAuthenticationTokenRequest,
+    IssueAppAuthenticationTokenResponse
+  >;
+  dumpNetworkStats: Requester<
+    DumpNetworkStatsRequest,
+    DumpNetworkStatsResponse
   >;
 }

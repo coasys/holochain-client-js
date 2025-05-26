@@ -5,19 +5,23 @@
 ## CapAccess type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type CapAccess = "Unrestricted" | {
-    Transferable: {
+export type CapAccess = {
+    type: "unrestricted";
+} | {
+    type: "transferable";
+    value: {
         secret: CapSecret;
     };
 } | {
-    Assigned: {
+    type: "assigned";
+    value: {
         secret: CapSecret;
         assignees: AgentPubKey[];
     };
 };
 ```
-<b>References:</b> [CapSecret](./client.capsecret.md)<!-- -->, [AgentPubKey](./client.agentpubkey.md)
+**References:** [CapSecret](./client.capsecret.md)<!-- -->, [AgentPubKey](./client.agentpubkey.md)
 

@@ -5,14 +5,14 @@
 ## AppBundleSource type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type AppBundleSource = {
-    bundle: AppBundle;
+export type AppBundleSource = {
+    type: "path";
+    value: string;
 } | {
-    path: string;
+    type: "bytes";
+    value: Uint8Array;
 };
 ```
-<b>References:</b> [AppBundle](./client.appbundle.md)
-

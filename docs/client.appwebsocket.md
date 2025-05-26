@@ -4,35 +4,384 @@
 
 ## AppWebsocket class
 
-A class to establish a websocket connection to an App interface of a Holochain conductor.
+A class to establish a websocket connection to an App interface, for a specific agent and app.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare class AppWebsocket extends Emittery implements AppApi 
+export declare class AppWebsocket implements AppClient 
 ```
-<b>Extends:</b> Emittery
-
-<b>Implements:</b> [AppApi](./client.appapi.md)
+**Implements:** [AppClient](./client.appclient.md)
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_requester](./client.appwebsocket._requester.md) |  | &lt;ReqI, ReqO, ResI, ResO&gt;(tag: string, transformer?: [Transformer](./client.transformer_2.md)<!-- -->&lt;ReqI, ReqO, ResI, ResO&gt; \| undefined) =&gt; (req: ReqI, timeout?: number \| undefined) =&gt; Promise&lt;ResO&gt; |  |
-|  [appInfo](./client.appwebsocket.appinfo.md) |  | [Requester](./client.requester.md)<!-- -->&lt;[AppInfoRequest](./client.appinforequest.md)<!-- -->, [AppInfoResponse](./client.appinforesponse.md)<!-- -->&gt; | Request the app's info, including all cell infos. |
-|  [callZome](./client.appwebsocket.callzome.md) |  | [Requester](./client.requester.md)<!-- -->&lt;[CallZomeRequest](./client.callzomerequest.md) \| [CallZomeRequestSigned](./client.callzomerequestsigned.md)<!-- -->, [CallZomeResponse](./client.callzomeresponse.md)<!-- -->&gt; | Call a zome. |
-|  [client](./client.appwebsocket.client.md) | <code>readonly</code> | [WsClient](./client.wsclient.md) |  |
-|  [createCloneCell](./client.appwebsocket.createclonecell.md) |  | [Requester](./client.requester.md)<!-- -->&lt;[CreateCloneCellRequest](./client.createclonecellrequest.md)<!-- -->, [CreateCloneCellResponse](./client.createclonecellresponse.md)<!-- -->&gt; | Clone an existing provisioned cell. |
-|  [defaultTimeout](./client.appwebsocket.defaulttimeout.md) |  | number |  |
-|  [disableCloneCell](./client.appwebsocket.disableclonecell.md) |  | [Requester](./client.requester.md)<!-- -->&lt;[DisableCloneCellRequest](./client.disableclonecellrequest.md)<!-- -->, [DisableCloneCellResponse](./client.disableclonecellresponse.md)<!-- -->&gt; | Disable an enabled clone cell. |
-|  [enableCloneCell](./client.appwebsocket.enableclonecell.md) |  | [Requester](./client.requester.md)<!-- -->&lt;[EnableCloneCellRequest](./client.enableclonecellrequest.md)<!-- -->, [EnableCloneCellResponse](./client.enableclonecellresponse.md)<!-- -->&gt; | Enable a disabled clone cell. |
-|  [networkInfo](./client.appwebsocket.networkinfo.md) |  | [Requester](./client.requester.md)<!-- -->&lt;[NetworkInfoRequest](./client.networkinforequest.md)<!-- -->, [NetworkInfoResponse](./client.networkinforesponse.md)<!-- -->&gt; | Request network info about gossip status. |
-|  [overrideInstalledAppId?](./client.appwebsocket.overrideinstalledappid.md) |  | [InstalledAppId](./client.installedappid.md) | <i>(Optional)</i> |
+<table><thead><tr><th>
+
+Property
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[cachedAppInfo?](./client.appwebsocket.cachedappinfo.md)
+
+
+</td><td>
+
+
+</td><td>
+
+[AppInfo](./client.appinfo.md) \| null
+
+
+</td><td>
+
+_(Optional)_
+
+
+</td></tr>
+<tr><td>
+
+[client](./client.appwebsocket.client.md)
+
+
+</td><td>
+
+`readonly`
+
+
+</td><td>
+
+[WsClient](./client.wsclient.md)
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+[installedAppId](./client.appwebsocket.installedappid.md)
+
+
+</td><td>
+
+`readonly`
+
+
+</td><td>
+
+[InstalledAppId](./client.installedappid.md)
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+[myPubKey](./client.appwebsocket.mypubkey.md)
+
+
+</td><td>
+
+`readonly`
+
+
+</td><td>
+
+[AgentPubKey](./client.agentpubkey.md)
+
+
+</td><td>
+
+
+</td></tr>
+</tbody></table>
 
 ## Methods
 
-|  Method | Modifiers | Description |
-|  --- | --- | --- |
-|  [connect(url, defaultTimeout)](./client.appwebsocket.connect.md) | <code>static</code> | Instance factory for creating AppWebsockets. |
+<table><thead><tr><th>
 
+Method
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[abandonCountersigningSession(args)](./client.appwebsocket.abandoncountersigningsession.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Abandon an unresolved countersigning session.
+
+If the current session has not been resolved automatically, it can be forcefully abandoned. A condition for this call to succeed is that at least one attempt has been made to resolve it automatically.
+
+\# Returns
+
+\[`AppResponse::CountersigningSessionAbandoned`<!-- -->\]
+
+The session is marked for abandoning and the countersigning workflow was triggered. The session has not been abandoned yet.
+
+Upon successful abandoning the system signal \[`SystemSignal::AbandonedCountersigning`<!-- -->\] will be emitted and the session removed from state, so that \[`AppRequest::GetCountersigningSessionState`<!-- -->\] would return `None`<!-- -->.
+
+In the countersigning workflow it will first be attempted to resolve the session with incoming signatures of the countersigned entries, before force-abandoning the session. In a very rare event it could happen that in just the moment where the \[`AppRequest::AbandonCountersigningSession`<!-- -->\] is made, signatures for this session come in. If they are valid, the session will be resolved and published as usual. Should they be invalid, however, the flag to abandon the session is erased. In such cases this request can be retried until the session has been abandoned successfully.
+
+\# Errors
+
+\[`CountersigningError::WorkspaceDoesNotExist`<!-- -->\] likely indicates that an invalid cell id was passed in to the call.
+
+\[`CountersigningError::SessionNotFound`<!-- -->\] when no ongoing session could be found for the provided cell id.
+
+\[`CountersigningError::SessionNotUnresolved`<!-- -->\] when an attempt to resolve the session automatically has not been made.
+
+
+</td></tr>
+<tr><td>
+
+[appInfo(timeout)](./client.appwebsocket.appinfo.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Request the app's info, including all cell infos.
+
+
+</td></tr>
+<tr><td>
+
+[callZome(request, timeout)](./client.appwebsocket.callzome.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Call a zome.
+
+
+</td></tr>
+<tr><td>
+
+[connect(options)](./client.appwebsocket.connect.md)
+
+
+</td><td>
+
+`static`
+
+
+</td><td>
+
+Instance factory for creating an [AppWebsocket](./client.appwebsocket.md)<!-- -->.
+
+
+</td></tr>
+<tr><td>
+
+[createCloneCell(args)](./client.appwebsocket.createclonecell.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Clone an existing provisioned cell.
+
+
+</td></tr>
+<tr><td>
+
+[disableCloneCell(args)](./client.appwebsocket.disableclonecell.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Disable an enabled clone cell.
+
+
+</td></tr>
+<tr><td>
+
+[dumpNetworkMetrics(req, timeout)](./client.appwebsocket.dumpnetworkmetrics.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Request network metrics.
+
+
+</td></tr>
+<tr><td>
+
+[dumpNetworkStats(timeout)](./client.appwebsocket.dumpnetworkstats.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Request network stats.
+
+
+</td></tr>
+<tr><td>
+
+[enableApp()](./client.appwebsocket.enableapp.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Enable an app only if the app is in the `AppStatus::Disabled(DisabledAppReason::NotStartedAfterProvidingMemproofs)` state. Attempting to enable the app from other states (other than Running) will fail.
+
+
+</td></tr>
+<tr><td>
+
+[enableCloneCell(args)](./client.appwebsocket.enableclonecell.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Enable a disabled clone cell.
+
+
+</td></tr>
+<tr><td>
+
+[getCellIdFromRoleName(roleName, appInfo)](./client.appwebsocket.getcellidfromrolename.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Get a cell id by its role name or clone id.
+
+
+</td></tr>
+<tr><td>
+
+[getCountersigningSessionState(args)](./client.appwebsocket.getcountersigningsessionstate.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Get the state of a countersigning session.
+
+
+</td></tr>
+<tr><td>
+
+[on(eventName, listener)](./client.appwebsocket.on.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Register an event listener for signals.
+
+
+</td></tr>
+<tr><td>
+
+[provideMemproofs(memproofs)](./client.appwebsocket.providememproofs.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Provide membrane proofs for the app.
+
+
+</td></tr>
+<tr><td>
+
+[publishCountersigningSession(args)](./client.appwebsocket.publishcountersigningsession.md)
+
+
+</td><td>
+
+
+</td><td>
+
+Publish an unresolved countersigning session.
+
+If the current session has not been resolved automatically, it can be forcefully published. A condition for this call to succeed is that at least one attempt has been made to resolve it automatically.
+
+\# Returns
+
+\[`AppResponse::PublishCountersigningSessionTriggered`<!-- -->\]
+
+The session is marked for publishing and the countersigning workflow was triggered. The session has not been published yet.
+
+Upon successful publishing the system signal \[`SystemSignal::SuccessfulCountersigning`<!-- -->\] will be emitted and the session removed from state, so that \[`AppRequest::GetCountersigningSessionState`<!-- -->\] would return `None`<!-- -->.
+
+In the countersigning workflow it will first be attempted to resolve the session with incoming signatures of the countersigned entries, before force-publishing the session. In a very rare event it could happen that in just the moment where the \[`AppRequest::PublishCountersigningSession`<!-- -->\] is made, signatures for this session come in. If they are valid, the session will be resolved and published as usual. Should they be invalid, however, the flag to publish the session is erased. In such cases this request can be retried until the session has been published successfully.
+
+\# Errors
+
+\[`CountersigningError::WorkspaceDoesNotExist`<!-- -->\] likely indicates that an invalid cell id was passed in to the call.
+
+\[`CountersigningError::SessionNotFound`<!-- -->\] when no ongoing session could be found for the provided cell id.
+
+\[`CountersigningError::SessionNotUnresolved`<!-- -->\] when an attempt to resolve the session automatically has not been made.
+
+
+</td></tr>
+</tbody></table>

@@ -6,20 +6,49 @@
 
 Send requests to the connected websocket.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-request<Req, Res>(request: Req): Promise<Res>;
+request<Response>(request: unknown): Promise<Response>;
 ```
 
 ## Parameters
 
-|  Parameter | Type | Description |
-|  --- | --- | --- |
-|  request | Req | The request to send over the websocket. |
+<table><thead><tr><th>
 
-<b>Returns:</b>
+Parameter
 
-Promise&lt;Res&gt;
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+request
+
+
+</td><td>
+
+unknown
+
+
+</td><td>
+
+The request to send over the websocket.
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+Promise&lt;Response&gt;
 
 

@@ -5,16 +5,19 @@
 ## DnaSource type
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare type DnaSource = {
-    hash: HoloHash;
+export type DnaSource = {
+    type: "path";
+    value: string;
 } | {
-    path: string;
+    type: "bundle";
+    value: DnaBundle;
 } | {
-    bundle: DnaBundle;
+    type: "hash";
+    value: HoloHash;
 };
 ```
-<b>References:</b> [HoloHash](./client.holohash.md)<!-- -->, [DnaBundle](./client.dnabundle.md)
+**References:** [DnaBundle](./client.dnabundle.md)<!-- -->, [HoloHash](./client.holohash.md)
 

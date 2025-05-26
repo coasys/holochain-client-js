@@ -2,12 +2,66 @@
 
 [Home](./index.md) &gt; [@holochain/client](./client.md) &gt; [setSigningCredentials](./client.setsigningcredentials.md)
 
-## setSigningCredentials variable
+## setSigningCredentials() function
 
 Set credentials for signing zome calls.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 setSigningCredentials: (cellId: CellId, credentials: SigningCredentials) => void
 ```
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+cellId
+
+
+</td><td>
+
+[CellId](./client.cellid.md)
+
+
+</td><td>
+
+Cell id to set credentials for.
+
+
+</td></tr>
+<tr><td>
+
+credentials
+
+
+</td><td>
+
+[SigningCredentials](./client.signingcredentials.md)
+
+
+</td><td>
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
+
+void
+

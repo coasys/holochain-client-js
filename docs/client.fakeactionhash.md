@@ -6,12 +6,48 @@
 
 Generate a valid hash of a non-existing action.
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
-export declare function fakeActionHash(): Promise<ActionHash>;
+export declare function fakeActionHash(coreByte?: number | undefined): Promise<ActionHash>;
 ```
-<b>Returns:</b>
+
+## Parameters
+
+<table><thead><tr><th>
+
+Parameter
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+coreByte
+
+
+</td><td>
+
+number \| undefined
+
+
+</td><td>
+
+_(Optional)_ Optionally specify a byte to repeat for all core 32 bytes. If undefined will generate random core 32 bytes.
+
+
+</td></tr>
+</tbody></table>
+**Returns:**
 
 Promise&lt;[ActionHash](./client.actionhash.md)<!-- -->&gt;
 

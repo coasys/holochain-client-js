@@ -5,7 +5,7 @@
 ## SigningCredentials interface
 
 
-<b>Signature:</b>
+**Signature:**
 
 ```typescript
 export interface SigningCredentials 
@@ -13,9 +13,76 @@ export interface SigningCredentials
 
 ## Properties
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [capSecret](./client.signingcredentials.capsecret.md) |  | [CapSecret](./client.capsecret.md) |  |
-|  [keyPair](./client.signingcredentials.keypair.md) |  | nacl.SignKeyPair |  |
-|  [signingKey](./client.signingcredentials.signingkey.md) |  | [AgentPubKey](./client.agentpubkey.md) |  |
+<table><thead><tr><th>
 
+Property
+
+
+</th><th>
+
+Modifiers
+
+
+</th><th>
+
+Type
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[capSecret](./client.signingcredentials.capsecret.md)
+
+
+</td><td>
+
+
+</td><td>
+
+[CapSecret](./client.capsecret.md)
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+[keyPair](./client.signingcredentials.keypair.md)
+
+
+</td><td>
+
+
+</td><td>
+
+KeyPair
+
+
+</td><td>
+
+
+</td></tr>
+<tr><td>
+
+[signingKey](./client.signingcredentials.signingkey.md)
+
+
+</td><td>
+
+
+</td><td>
+
+[AgentPubKey](./client.agentpubkey.md)
+
+
+</td><td>
+
+
+</td></tr>
+</tbody></table>
